@@ -11,7 +11,7 @@ export const ErrorMiddleware = (
   error.statusCode = error.statusCode || 500;
 
   if (error.code === "P2002") {
-    const message: string = "User already exist";
+    const message: string = `${error.meta.modelName} already exist`;
     error = new ErrorHandler(message, 400);
   }
 

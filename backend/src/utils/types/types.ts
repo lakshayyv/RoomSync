@@ -1,6 +1,6 @@
 import zod from "zod";
 
-export const userParser = zod.object({
+export const validator = zod.object({
   name: zod.string({
     required_error: "Name is required",
   }),
@@ -18,4 +18,4 @@ export const userParser = zod.object({
 
 export type TokenPayload = { id: string; email: string };
 
-export type UserParser = zod.infer<typeof userParser>;
+export type Validator = zod.infer<typeof validator>;

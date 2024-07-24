@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 
 import userRouter from "./routes/user";
 import requestRouter from "./routes/request";
+import adminRouter from "./routes/admin";
+import dashboardRouter from "./routes/dashboard";
 import { ErrorMiddleware } from "./middlewares/error";
 
 dotenv.config();
@@ -17,7 +19,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/request", requestRouter);
+app.use("/api/v1/dashboard", dashboardRouter);
 
 app.use(ErrorMiddleware);
 

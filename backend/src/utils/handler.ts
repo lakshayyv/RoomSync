@@ -39,9 +39,66 @@ export const handleExistingRequest = async (
   const request = await prisma.request.findFirst({
     where: { senderId: senderId, receiverId: receiverId },
   });
+
   if (request) {
     const message: string = "Request already sent";
-    return next(new ErrorHandler(message, 400));
+    next(new ErrorHandler(message, 400));
+
+    return request;
   }
-  return request;
+  return null;
+};
+
+export const handleSelfRequest = (
+  id: string,
+  userId: string,
+  next: NextFunction
+): boolean => {
+  const match: boolean = id === userId;
+  if (match) {
+    const message: string = "Don't send request to yourself";
+    next(new ErrorHandler(message, 400));
+  }
+  return match;
+};
+
+export const handleAdminRequest = async (
+  payload: any,
+  next: NextFunction
+): Promise<any> => {
+  const request = await prisma.request.findFirst({
+    where: {
+      AND: [
+        { OR: [{ senderId: payload.id }, { receiverId: payload.id }] },
+        { OR: [{ status: "ONGOING" }, { status: "APPROVED" }] },
+      ],
+    },
+  });
+  if (request) {
+    const message: string = "Can't send request anymore";
+    next(new ErrorHandler(message, 400));
+    return request;
+  }
+  return null;
+};
+
+export const handleUserRequest = async (
+  userId: string,
+  next: NextFunction
+): Promise<any> => {
+  const request = await prisma.request.findFirst({
+    where: {
+      AND: [
+        { OR: [{ senderId: userId }, { receiverId: userId }] },
+        { OR: [{ status: "ONGOING" }, { status: "APPROVED" }] },
+      ],
+    },
+  });
+
+  if (request) {
+    const message: string = "Can't send request to this user";
+    next(new ErrorHandler(message, 400));
+    return request;
+  }
+  return null;
 };

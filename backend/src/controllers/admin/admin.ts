@@ -1,18 +1,18 @@
 import { NextFunction, Request, Response } from "express";
-import { prisma } from "../config/db";
-import { userParser, UserParser } from "../utils/types/types";
-import { CatchAsyncError } from "../middlewares/CatchAsyncError";
-import { hashPassword, verifyHash } from "../utils/crypto";
-import { ErrorHandler } from "../utils/errorHandler";
-import { handleAuthorization, handleTokenAndCookie } from "../utils/handler";
-import { User } from "@prisma/client";
+import { CatchAsyncError } from "../../middlewares/CatchAsyncError";
+import { ErrorHandler } from "../../utils/errorHandler";
+import { hashPassword, verifyHash } from "../../utils/crypto";
+import { handleAuthorization, handleTokenAndCookie } from "../../utils/handler";
+import { prisma } from "../../config/db";
+import { validator, Validator } from "../../utils/types/types";
+import { Admin } from "@prisma/client";
 
 const controller = {
   signup: CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
-      const body: UserParser = req.body;
+      const body: Validator = req.body;
 
-      const parserPayload = userParser.safeParse(body);
+      const parserPayload = validator.safeParse(body);
       if (!parserPayload.success) {
         const message: string = parserPayload.error.errors[0].message;
         return next(new ErrorHandler(message, 400));
@@ -20,7 +20,7 @@ const controller = {
 
       body.password = hashPassword(body.password);
 
-      const response = await prisma.user.create({
+      const response = await prisma.admin.create({
         data: {
           name: body.name,
           email: body.email,
@@ -41,7 +41,7 @@ const controller = {
     async (req: Request, res: Response, next: NextFunction) => {
       const body = req.body;
 
-      const response = await prisma.user.findUnique({
+      const response = await prisma.admin.findUnique({
         where: { email: body.email },
       });
 
@@ -66,7 +66,7 @@ const controller = {
 
   logout: CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
-      const payload = req.user;
+      const payload = req.admin;
 
       handleAuthorization(payload, next);
 
@@ -81,7 +81,7 @@ const controller = {
 
   fetchProfile: CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
-      const payload = req.user;
+      const payload = req.admin;
 
       handleAuthorization(payload, next);
 
@@ -92,49 +92,33 @@ const controller = {
     }
   ),
 
-  updateProfile: CatchAsyncError(
+  deleteProfile: CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
-      const updatePayload = req.body;
-      const payload: User = req.user as User;
+      const payload: Admin = req.admin as Admin;
 
       handleAuthorization(payload, next);
 
-      if (updatePayload.name && payload.name !== updatePayload.name) {
-        await prisma.request.updateMany({
-          where: { senderId: payload.id },
-          data: { senderName: updatePayload.name },
-        });
-        await prisma.request.updateMany({
-          where: { receiverId: payload.id },
-          data: { receiverName: updatePayload.name },
-        });
-      }
+      await prisma.admin.delete({ where: { id: payload.id } });
 
-      const response = await prisma.user.update({
-        where: { id: payload.id },
-        data: updatePayload,
-      });
-
-      const token = handleTokenAndCookie(response.id, response.email, res);
-
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
-        message: token,
+        message: "Deleted successfully",
       });
     }
   ),
 
-  deleteProfile: CatchAsyncError(
+  deleteUser: CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
-      const payload: User = req.user as User;
+      const userId: string = req.query.id as string;
+      const payload: Admin = req.admin as Admin;
 
       handleAuthorization(payload, next);
 
       await prisma.request.deleteMany({
-        where: { OR: [{ senderId: payload.id }, { receiverId: payload.id }] },
+        where: { OR: [{ senderId: userId }, { receiverId: userId }] },
       });
 
-      await prisma.user.delete({ where: { id: payload.id } });
+      await prisma.user.delete({ where: { id: userId } });
 
       return res.status(200).json({
         success: true,

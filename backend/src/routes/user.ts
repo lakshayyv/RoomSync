@@ -1,18 +1,18 @@
 import { Router } from "express";
-import userController from "../controllers/user";
+import controller from "../controllers/user/user";
 import { verifyUser } from "../middlewares/user";
 
 const router = Router();
 
-router.route("/signup").post(userController.signup);
-router.route("/signin").post(userController.signin);
-router.route("/logout").all(verifyUser).delete(userController.logout);
+router.route("/signup").post(controller.signup);
+router.route("/signin").post(controller.signin);
+router.route("/logout").all(verifyUser).delete(controller.logout);
 
 router
   .route("/me")
   .all(verifyUser)
-  .get(userController.fetchProfile)
-  .put(userController.updateProfile)
-  .delete(userController.deleteProfile);
+  .get(controller.fetchProfile)
+  .put(controller.updateProfile)
+  .delete(controller.deleteProfile);
 
 export default router;

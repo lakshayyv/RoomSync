@@ -1,12 +1,15 @@
 import { NextFunction, Request, Response } from "express";
-import { prisma } from "../config/db";
-import { CatchAsyncError } from "../middlewares/CatchAsyncError";
-import { ErrorHandler } from "../utils/errorHandler";
+import { prisma } from "../../config/db";
+import { CatchAsyncError } from "../../middlewares/CatchAsyncError";
+import { ErrorHandler } from "../../utils/errorHandler";
 import {
   handleAuthorization,
   handleUserExistence,
   handleExistingRequest,
-} from "../utils/handler";
+  handleSelfRequest,
+  handleAdminRequest,
+  handleUserRequest,
+} from "../../utils/handler";
 import { User } from "@prisma/client";
 
 const controller = {
@@ -16,40 +19,10 @@ const controller = {
       const payload: User = req.user as User;
       handleAuthorization(payload, next);
 
-      if (payload.id === userId) {
-        const message: string = "Don't send request to yourself";
-        return next(new ErrorHandler(message, 400));
-      }
-
-      const adminRequest = await prisma.request.findFirst({
-        where: {
-          AND: [
-            { OR: [{ senderId: payload.id }, { receiverId: payload.id }] },
-            { OR: [{ status: "ONGOING" }, { status: "APPROVED" }] },
-          ],
-        },
-      });
-
-      if (adminRequest) {
-        const message: string = "Can't send request anymore";
-        return next(new ErrorHandler(message, 400));
-      }
-
-      const userAdminRequest = await prisma.request.findFirst({
-        where: {
-          AND: [
-            { OR: [{ senderId: userId }, { receiverId: userId }] },
-            { OR: [{ status: "ONGOING" }, { status: "APPROVED" }] },
-          ],
-        },
-      });
-
-      if (userAdminRequest) {
-        const message: string = "Can't send request to this user";
-        return next(new ErrorHandler(message, 400));
-      }
-
-      if (!(await handleExistingRequest(payload.id, userId, next))) return;
+      if (handleSelfRequest(payload.id, userId, next)) return;
+      if (await handleAdminRequest(payload, next)) return;
+      if (await handleUserRequest(userId, next)) return;
+      if (await handleExistingRequest(payload.id, userId, next)) return;
 
       const match = await prisma.request.findFirst({
         where: { senderId: userId, receiverId: payload.id },
