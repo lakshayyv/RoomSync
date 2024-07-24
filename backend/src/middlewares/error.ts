@@ -15,8 +15,8 @@ export const ErrorMiddleware = (
     error = new ErrorHandler(message, 400);
   }
 
-  if(error.code === "P2025") {
-    const message: string = "User doesn't exist";
+  if (error.code === "P2025") {
+    const message: string = `${error.meta.modelName} doesn't exist`;
     error = new ErrorHandler(message, 400);
   }
 

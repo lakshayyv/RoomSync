@@ -4,7 +4,8 @@ import { userParser, UserParser } from "../utils/types/types";
 import { CatchAsyncError } from "../middlewares/CatchAsyncError";
 import { hashPassword, verifyHash } from "../utils/crypto";
 import { ErrorHandler } from "../utils/errorHandler";
-import { fetchToken } from "../utils/token";
+import { handleAuthorization, handleTokenAndCookie } from "../utils/handler";
+import { User } from "@prisma/client";
 
 const controller = {
   signup: CatchAsyncError(
@@ -27,8 +28,7 @@ const controller = {
         },
       });
 
-      const token: string = fetchToken(response.id, response.email);
-      res.cookie("token", token);
+      const token = handleTokenAndCookie(response.id, response.email, res);
 
       return res.status(200).json({
         success: true,
@@ -46,19 +46,16 @@ const controller = {
       });
 
       if (!response) {
-        const message: string = "User doesn't exist";
-        return next(new ErrorHandler(message, 400));
+        return next(new ErrorHandler("User doesn't exist", 400));
       }
 
       const isMatch: boolean = verifyHash(response.password, body.password);
 
       if (!isMatch) {
-        const message: string = "Invalid password";
-        return next(new ErrorHandler(message, 400));
+        return next(new ErrorHandler("Invalid password", 400));
       }
 
-      const token: string = fetchToken(response.id, response.email);
-      res.cookie("token", token);
+      const token = handleTokenAndCookie(response.id, response.email, res);
 
       return res.status(200).json({
         success: true,
@@ -71,10 +68,7 @@ const controller = {
     async (req: Request, res: Response, next: NextFunction) => {
       const payload = req.user;
 
-      if (!payload) {
-        const message: string = "User not authorized";
-        return next(new ErrorHandler(message, 401));
-      }
+      handleAuthorization(payload, next);
 
       res.clearCookie("token");
 
@@ -89,10 +83,7 @@ const controller = {
     async (req: Request, res: Response, next: NextFunction) => {
       const payload = req.user;
 
-      if (!payload) {
-        const message: string = "User not authorized";
-        return next(new ErrorHandler(message, 401));
-      }
+      handleAuthorization(payload, next);
 
       return res.status(200).json({
         success: true,
@@ -104,11 +95,19 @@ const controller = {
   updateProfile: CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
       const updatePayload = req.body;
-      const payload = req.user;
+      const payload: User = req.user as User;
 
-      if (!payload) {
-        const message: string = "User not authorized";
-        return next(new ErrorHandler(message, 401));
+      handleAuthorization(payload, next);
+
+      if (updatePayload.name && payload.name !== updatePayload.name) {
+        await prisma.request.updateMany({
+          where: { senderId: payload.id },
+          data: { senderName: updatePayload.name },
+        });
+        await prisma.request.updateMany({
+          where: { receiverId: payload.id },
+          data: { receiverName: updatePayload.name },
+        });
       }
 
       const response = await prisma.user.update({
@@ -116,8 +115,7 @@ const controller = {
         data: updatePayload,
       });
 
-      const token = fetchToken(response.id, response.email);
-      res.cookie("token", token);
+      const token = handleTokenAndCookie(response.id, response.email, res);
 
       res.status(200).json({
         success: true,
@@ -128,170 +126,19 @@ const controller = {
 
   deleteProfile: CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
-      const payload = req.user;
+      const payload: User = req.user as User;
 
-      if (!payload) {
-        const message: string = "User not authorized";
-        return next(new ErrorHandler(message, 401));
-      }
+      handleAuthorization(payload, next);
 
-      const response = await prisma.user.delete({ where: { id: payload.id } });
+      await prisma.request.deleteMany({
+        where: { OR: [{ senderId: payload.id }, { receiverId: payload.id }] },
+      });
+
+      await prisma.user.delete({ where: { id: payload.id } });
 
       return res.status(200).json({
         success: true,
         message: "Deleted successfully",
-      });
-    }
-  ),
-
-  request: CatchAsyncError(
-    async (req: Request, res: Response, next: NextFunction) => {
-      const userId: string = req.query.id as string;
-      const payload = req.user;
-
-      if (!payload) {
-        const message: string = "User not authorized";
-        return next(new ErrorHandler(message, 401));
-      }
-
-      if (payload.id === userId) {
-        const message: string = "Don't set request to yourself";
-        return next(new ErrorHandler(message, 400));
-      }
-
-      const adminRequest = await prisma.request.findFirst({
-        where: { OR: [{ status: "ONGOING" }, { status: "APPROVED" }] },
-      });
-
-      if (adminRequest) {
-        const message: string = "Can't sent request anymore";
-        return next(new ErrorHandler(message, 400));
-      }
-
-      const request = await prisma.request.findFirst({
-        where: { senderId: payload.id, receiverId: userId },
-      });
-
-      if (request) {
-        const message: string = "Request already sent";
-        return next(new ErrorHandler(message, 400));
-      }
-
-      const match = await prisma.request.findFirst({
-        where: { senderId: userId, receiverId: payload.id },
-      });
-
-      if (match) {
-        const response = await prisma.request.update({
-          where: { id: match.id },
-          data: { status: "ONGOING" },
-        });
-
-        return res.status(200).json({
-          success: true,
-          message: "Request sent to admin",
-        });
-      }
-
-      const user = await prisma.user.findUnique({ where: { id: userId } });
-
-      if (!user) {
-        const message: string = "User doesn't exist";
-        return next(new ErrorHandler(message, 400));
-      }
-
-      const response = await prisma.request.create({
-        data: {
-          sender: { connect: { id: payload.id } },
-          receiver: { connect: { id: user?.id } },
-          senderName: payload.name,
-          receiverName: user.name,
-        },
-      });
-
-      return res.status(200).json({
-        success: true,
-        message: "Requested successfully",
-      });
-    }
-  ),
-
-  fetchSentRequest: CatchAsyncError(
-    async (req: Request, res: Response, next: NextFunction) => {
-      const payload = req.user;
-
-      if (!payload) {
-        const message: string = "User not authorized";
-        return next(new ErrorHandler(message, 401));
-      }
-
-      const response = await prisma.request.findMany({
-        where: { senderId: payload.id, status: "PENDING" },
-      });
-
-      if (response.length < 1) {
-        const message: string = "No sent request";
-        return next(new ErrorHandler(message, 404));
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: response,
-      });
-    }
-  ),
-
-  fetchReceivedRequest: CatchAsyncError(
-    async (req: Request, res: Response, next: NextFunction) => {
-      const payload = req.user;
-
-      if (!payload) {
-        const message: string = "User not authorized";
-        return next(new ErrorHandler(message, 401));
-      }
-
-      const response = await prisma.request.findMany({
-        where: { receiverId: payload.id, status: "PENDING" },
-      });
-
-      if (response.length < 1) {
-        const message: string = "No sent request";
-        return next(new ErrorHandler(message, 404));
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: response,
-      });
-    }
-  ),
-
-  fetchRequest: CatchAsyncError(
-    async (req: Request, res: Response, next: NextFunction) => {
-      const payload = req.user;
-
-      if (!payload) {
-        const message: string = "User not authorized";
-        return next(new ErrorHandler(message, 401));
-      }
-
-      const response = await prisma.request.findMany({
-        where: {
-          AND: [
-            { OR: [{ senderId: payload.id }, { receiverId: payload.id }] },
-            { OR: [{ status: "ONGOING" }, { status: "APPROVED" }] },
-          ],
-        },
-      });
-
-      if (response.length < 1) {
-        const message: string = "No sent request";
-        return next(new ErrorHandler(message, 404));
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: response,
       });
     }
   ),

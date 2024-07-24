@@ -15,18 +15,4 @@ router
   .put(userController.updateProfile)
   .delete(userController.deleteProfile);
 
-router.route("/request").all(verifyUser).get(userController.request);
-
-router
-  .route("/request/sent")
-  .all(verifyUser)
-  .get(userController.fetchSentRequest);
-
-router
-  .route("/request/received")
-  .all(verifyUser)
-  .get(userController.fetchReceivedRequest);
-
-router.route("/request/admin").all(verifyUser).get(userController.fetchRequest);
-
 export default router;

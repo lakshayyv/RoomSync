@@ -1,8 +1,10 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-import userRouter from "./routes/user";
 import dotenv from "dotenv";
+
+import userRouter from "./routes/user";
+import requestRouter from "./routes/request";
 import { ErrorMiddleware } from "./middlewares/error";
 
 dotenv.config();
@@ -15,6 +17,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/request", requestRouter);
 
 app.use(ErrorMiddleware);
 
