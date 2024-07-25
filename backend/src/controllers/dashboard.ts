@@ -3,16 +3,26 @@ import { CatchAsyncError } from "../middlewares/CatchAsyncError";
 import { prisma } from "../config/db";
 import { ineligibleUser } from "../utils/helper";
 import { ErrorHandler } from "../utils/errorHandler";
+import { User } from "@prisma/client";
 
 const controller = {
   // --USER
 
   fetchUser: CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
-      const invalidUser = await ineligibleUser();
+      const user: User = req.user as User;
+      let invalidUser = await ineligibleUser();
+      invalidUser = [...invalidUser, user?.id];
 
       const response = await prisma.user.findMany({
-        select: { id: true, name: true, email: true },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          age: true,
+          year: true,
+          course: true,
+        },
         where: { id: { notIn: invalidUser } },
       });
 
@@ -32,7 +42,6 @@ const controller = {
 
   fetchUserAdmin: CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
-
       const response = await prisma.user.findMany({
         select: { id: true, name: true, email: true },
       });

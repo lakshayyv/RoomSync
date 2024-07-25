@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "../../config/db";
-import { validator, Validator } from "../../utils/types/types";
+import { validator } from "../../utils/types/types";
 import { CatchAsyncError } from "../../middlewares/CatchAsyncError";
 import { hashPassword, verifyHash } from "../../utils/crypto";
 import { ErrorHandler } from "../../utils/errorHandler";
@@ -10,7 +10,7 @@ import { User } from "@prisma/client";
 const controller = {
   signup: CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
-      const body: Validator = req.body;
+      const body: User = req.body;
 
       const parserPayload = validator.safeParse(body);
       if (!parserPayload.success) {
@@ -25,6 +25,9 @@ const controller = {
           name: body.name,
           email: body.email,
           password: body.password,
+          age: body.age,
+          year: body.year,
+          course: body.course,
         },
       });
 
@@ -139,6 +142,23 @@ const controller = {
       return res.status(200).json({
         success: true,
         message: "Deleted successfully",
+      });
+    }
+  ),
+
+  fetchAuth: CatchAsyncError(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const user = req.user;
+
+      if (!user) {
+        return res.status(200).json({
+          success: true,
+          authorized: false,
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        authorized: true,
       });
     }
   ),

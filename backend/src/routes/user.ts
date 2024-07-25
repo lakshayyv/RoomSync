@@ -15,4 +15,6 @@ router
   .put(controller.updateProfile)
   .delete(controller.deleteProfile);
 
+router.route("/auth").all(verifyUser).get(controller.fetchAuth);
+
 export default router;
