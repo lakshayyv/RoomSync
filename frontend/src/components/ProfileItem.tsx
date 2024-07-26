@@ -1,4 +1,6 @@
-import { MdModeEdit, MdSave } from "react-icons/md";
+import { MdModeEdit } from "react-icons/md";
+import { FaRegSave } from "react-icons/fa";
+import { MdOutlineCancel } from "react-icons/md";
 import { useState } from "react";
 import { ProfileItemProps } from "../utils/types";
 import { useRecoilState } from "recoil";
@@ -12,6 +14,10 @@ const ProfileItem = (props: ProfileItemProps) => {
 
   const handleEditClick = () => {
     setIsEditing(true);
+  };
+
+  const handleCancelClick = () => {
+    setIsEditing(false);
   };
 
   const handleSaveClick = async () => {
@@ -29,7 +35,7 @@ const ProfileItem = (props: ProfileItemProps) => {
 
   return (
     <div
-      className={`flex w-full justify-between items-center text-lg py-3 px-5 ${props.className}`}
+      className={`flex w-full justify-between items-center text-lg py-3 px-5 mt-1 mb-1 ${props.className}`}
     >
       <p className="font-semibold">{props.title}</p>
       <div className="flex items-center">
@@ -44,7 +50,13 @@ const ProfileItem = (props: ProfileItemProps) => {
           <p>{props.value}</p>
         )}
         {isEditing ? (
-          <MdSave className="ml-5 cursor-pointer" onClick={handleSaveClick} />
+          <div className="flex item-center">
+            <FaRegSave
+              className="ml-5 cursor-pointer"
+              onClick={handleSaveClick}
+            />
+            <MdOutlineCancel className="ml-5 cursor-pointer text-red-600 w-5 h-5" onClick={handleCancelClick} />
+          </div>
         ) : (
           <MdModeEdit
             className="ml-5 cursor-pointer"

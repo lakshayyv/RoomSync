@@ -54,7 +54,8 @@ export const fetchProfile = async () => {
     const response = await axios.get("/api/v1/user/me");
     return response.data.message;
   } catch (error) {
-    errorToast("Error fetching profile")
+    errorToast("Error fetching profile");
+    return null;
   }
 };
 
@@ -62,6 +63,6 @@ export const updateUser = async (user: any) => {
   try {
     await axios.put("/api/v1/user/me", user);
   } catch (error) {
-    errorToast("Error updating user. Please try again")
+    errorToast("Error updating user. Please try again");
   }
-}
+};

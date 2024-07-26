@@ -1,10 +1,15 @@
 import { atom } from "recoil";
-import { DataSelector } from "../selector/user";
+import {
+  AllUserSelector,
+  AuthSelector,
+  DataSelector,
+  UserSelector,
+} from "../selector/user";
 import { UserType } from "../../utils/types";
 
 export const AuthAtom = atom({
   key: "AuthAtom",
-  default: false,
+  default: AuthSelector,
 });
 
 export const DataAtom = atom({
@@ -14,7 +19,7 @@ export const DataAtom = atom({
 
 export const AllUserAtom = atom({
   key: "AllUserAtom",
-  default: [],
+  default: AllUserSelector,
 });
 
 export const LoaderAtom = atom({
@@ -24,5 +29,5 @@ export const LoaderAtom = atom({
 
 export const UserAtom = atom<UserType | null>({
   key: "UserAtom",
-  default: null,
+  default: UserSelector,
 });
