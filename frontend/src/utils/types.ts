@@ -5,7 +5,15 @@ export type InputProps = {
   placeholder: string;
   value: string;
   className?: string;
-  inputMode?: "search" | "email" | "tel" | "text" | "url" | "none" | "numeric" | "decimal";
+  inputMode?:
+    | "search"
+    | "email"
+    | "tel"
+    | "text"
+    | "url"
+    | "none"
+    | "numeric"
+    | "decimal";
   cb: ChangeEventHandler<HTMLInputElement>;
 };
 
@@ -31,6 +39,23 @@ export type UserCardProps = {
   age: string;
   year: string;
   course: string;
+};
+
+export type UserType = {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  age: string;
+  year: string;
+  course: string;
+};
+
+export type ProfileItemProps = {
+  title: string;
+  value: string;
+  field: keyof UserType;
+  className?: string;
 };
 
 export type ProtectedRouteProps = {

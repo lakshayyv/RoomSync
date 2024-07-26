@@ -48,3 +48,20 @@ export const checkAuth = async () => {
     return false;
   }
 };
+
+export const fetchProfile = async () => {
+  try {
+    const response = await axios.get("/api/v1/user/me");
+    return response.data.message;
+  } catch (error) {
+    errorToast("Error fetching profile")
+  }
+};
+
+export const updateUser = async (user: any) => {
+  try {
+    await axios.put("/api/v1/user/me", user);
+  } catch (error) {
+    errorToast("Error updating user. Please try again")
+  }
+}
