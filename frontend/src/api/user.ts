@@ -1,5 +1,5 @@
 import axios, { isAxiosError } from "axios";
-import { errorToast } from "../utils/toast";
+import { errorToast, successToast } from "../utils/toast";
 
 export const signup = async (
   name: string,
@@ -64,5 +64,66 @@ export const updateUser = async (user: any) => {
     await axios.put("/api/v1/user/me", user);
   } catch (error) {
     errorToast("Error updating user. Please try again");
+  }
+};
+
+export const fetchReceivedRequest = async () => {
+  try {
+    const response = await axios.get("/api/v1/request/user/received");
+    return response.data.message;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const fetchSentRequest = async () => {
+  try {
+    const response = await axios.get("/api/v1/request/user/sent");
+    return response.data.message;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const fetchOngoingRequest = async () => {
+  try {
+    const response = await axios.get("/api/v1/request/user/ongoing");
+    return response.data.message;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const acceptRequest = async (id: string) => {
+  try {
+    const response = await axios.get(`api/v1/request/user/request/accept?id=${id}`);
+    successToast(response.data.message);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        errorToast(error.response.data.message);
+      } else {
+        errorToast('An unexpected error occurred');
+      }
+    } else {
+      errorToast('An unexpected error occurred');
+    }
+  }
+};
+
+export const retractRequest = async (id: string) => {
+  try {
+    const response = await axios.delete(`api/v1/request/user/request/accept?id=${id}`);
+    successToast(response.data.message);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        errorToast(error.response.data.message);
+      } else {
+        errorToast('An unexpected error occurred');
+      }
+    } else {
+      errorToast('An unexpected error occurred');
+    }
   }
 };

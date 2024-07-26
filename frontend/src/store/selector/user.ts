@@ -1,6 +1,6 @@
 import axios from "axios";
 import { selector } from "recoil";
-import { checkAuth, fetchProfile } from "../../api/user";
+import { checkAuth, fetchOngoingRequest, fetchProfile, fetchReceivedRequest, fetchSentRequest } from "../../api/user";
 import { fetchAllUser } from "../../api/dashboard";
 
 export const DataSelector = selector({
@@ -31,6 +31,33 @@ export const UserSelector = selector({
   key: "UserSelector",
   get: async () => {
     const response = await fetchProfile();
+    return response;
+  },
+});
+
+export const ReceivedRequestSelector = selector({
+  key: "ReceivedRequestSelector",
+  get: async () => {
+    const response = await fetchReceivedRequest();
+    console.log("Received: ", response);
+    return response;
+  },
+});
+
+export const SentRequestSelector = selector({
+  key: "SentRequestSelector",
+  get: async () => {
+    const response = await fetchSentRequest();
+    console.log("Sent: ", response);
+    return response;
+  },
+});
+
+export const OngoingRequestSelector = selector({
+  key: "OngoingRequestSelector",
+  get: async () => {
+    const response = await fetchOngoingRequest();
+    console.log("Ongoing: ", response);
     return response;
   },
 });

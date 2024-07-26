@@ -3,6 +3,9 @@ import {
   AllUserSelector,
   AuthSelector,
   DataSelector,
+  OngoingRequestSelector,
+  ReceivedRequestSelector,
+  SentRequestSelector,
   UserSelector,
 } from "../selector/user";
 import { UserType } from "../../utils/types";
@@ -30,4 +33,19 @@ export const LoaderAtom = atom({
 export const UserAtom = atom<UserType | null>({
   key: "UserAtom",
   default: UserSelector,
+});
+
+export const ReceivedRequestAtom = atom({
+  key: "RecievedRequestAtom",
+  default: ReceivedRequestSelector,
+});
+
+export const SentRequestAtom = atom({
+  key: "SentRequestAtom",
+  default: SentRequestSelector,
+});
+
+export const OngoingRequestAtom = atom({
+  key: "OngoingRequestAtom",
+  default: OngoingRequestSelector,
 });

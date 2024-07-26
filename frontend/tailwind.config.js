@@ -6,6 +6,7 @@ export default {
       backgroundColor: {
         accent: "#2285FA",
         dark: "#171721",
+        theme: "#23232E"
       },
       colors: {
         accent: "#2285FA",

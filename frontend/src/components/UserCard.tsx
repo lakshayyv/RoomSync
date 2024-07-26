@@ -38,7 +38,7 @@ const UserCard = (props: UserCardProps) => {
       <Button
         type="button"
         label="Request"
-        className="py-2 text-sm w-full rounded font-semibold"
+        className="py-2 text-sm w-full rounded font-semibold mb-3"
       />
     </div>
   );

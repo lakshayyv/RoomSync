@@ -58,6 +58,18 @@ export type ProfileItemProps = {
   className?: string;
 };
 
+export type RequestCardProps = {
+  id: string;
+  sender: string;
+  receiver: string;
+  type: string;
+  status: "PENDING" | "ONGOING" | "APPROVED";
+};
+
+export type TabbedPaneProps = {
+  type: string;
+};
+
 export type ProtectedRouteProps = {
   element: ReactElement<any, any>;
 };

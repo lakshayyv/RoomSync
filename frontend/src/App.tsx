@@ -10,6 +10,7 @@ import { useRecoilValue } from "recoil";
 import Loader from "./components/Loader";
 import { LoaderAtom } from "./store/atom/user";
 import Profile from "./pages/Profile";
+import Request from "./pages/user/Request";
 
 function App() {
   const loading = useRecoilValue(LoaderAtom);
@@ -39,6 +40,10 @@ function App() {
             <Route
               path="/profile"
               element={<ProtectedRoute element={<Profile />} />}
+            />
+            <Route
+              path="/request"
+              element={<ProtectedRoute element={<Request />} />}
             />
           </Routes>
         </div>
