@@ -2,9 +2,26 @@ import { useRecoilValueLoadable } from "recoil";
 import { UserAtom } from "../store/atom/user";
 import ProfileSkeleton from "../components/skeleton/ProfileSkeleton";
 import ProfileItem from "../components/ProfileItem";
+import Button from "../components/Button";
+import { deleteUser, logoutUser } from "../api/user";
 
 const Profile = () => {
   const user = useRecoilValueLoadable(UserAtom);
+
+  const handleLogout = async () => {
+    const res = await logoutUser();
+    if (res) {
+      window.location.reload();
+    }
+  };
+
+  const handleDelete = async () => {
+    const res = await deleteUser();
+    if (res) {
+      window.location.reload();
+    }
+  };
+
   return (
     <div className="ml-[16.67%] p-10">
       <h1 className="text-2xl font-semibold">Profile</h1>
@@ -23,6 +40,20 @@ const Profile = () => {
             value={user.contents.course}
             field="course"
           />
+          <div className="flex justify-between mt-10">
+            <Button
+              type="button"
+              label="Delete"
+              className="bg-red-600 px-5 py-3"
+              onClick={handleDelete}
+            />
+            <Button
+              type="button"
+              label="Logout"
+              className="bg-gray-600 px-5 py-3"
+              onClick={handleLogout}
+            />
+          </div>
         </>
       )}
     </div>

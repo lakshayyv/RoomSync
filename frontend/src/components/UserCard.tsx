@@ -1,7 +1,12 @@
+import { sendRequest } from "../api/dashboard";
 import { UserCardProps } from "../utils/types";
 import Button from "./Button";
 
 const UserCard = (props: UserCardProps) => {
+  const handleClick = async () => {
+    await sendRequest(props.id);
+  };
+
   return (
     <div className="bg-dark w-[260px] p-5 py-3 rounded">
       <div className="my-2">
@@ -39,6 +44,7 @@ const UserCard = (props: UserCardProps) => {
         type="button"
         label="Request"
         className="py-2 text-sm w-full rounded font-semibold mb-3"
+        onClick={handleClick}
       />
     </div>
   );

@@ -51,7 +51,7 @@ const RequestCard = (props: RequestCardProps) => {
       </div>
       <div className="flex items-center gap-x-5">
         <p className={`${statusColor[props.status]}`}>{props.status}</p>
-        {props.type !== "ongoing" && (
+        {(props.type !== "sent" && props.type !== "ongoing") && (
           <>
             <Button
               type="button"

@@ -127,3 +127,13 @@ export const retractRequest = async (id: string) => {
     }
   }
 };
+
+export const logoutUser = async () => {
+  const response = await axios.delete("/api/v1/user/logout");
+  return response.data.success;
+}
+
+export const deleteUser = async () => {
+  const response = await axios.delete("/api/v1/user/me");
+  return response.data.success;
+}
