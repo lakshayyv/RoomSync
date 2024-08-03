@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { CatchAsyncError } from "../middlewares/CatchAsyncError";
 import { prisma } from "../config/db";
-import { ineligibleUser } from "../utils/helper";
+import { checkUser, ineligibleUser } from "../utils/helper";
 import { ErrorHandler } from "../utils/errorHandler";
 import { User } from "@prisma/client";
 
@@ -11,10 +11,18 @@ const controller = {
   fetchUser: CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
       const user: User = req.user as User;
+
+      const isUserEligible = await checkUser(user.id);
+
+      if (isUserEligible) {
+        const message: string = "You have a ongoing request.";
+        return next(new ErrorHandler(message, 404));
+      }
+
       let invalidUser = await ineligibleUser(user.id);
       invalidUser = [...invalidUser, user?.id];
 
-      console.log(invalidUser)
+      console.log(invalidUser);
 
       const response = await prisma.user.findMany({
         select: {

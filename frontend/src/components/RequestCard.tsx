@@ -8,12 +8,14 @@ import {
   SentRequestAtom,
   OngoingRequestAtom,
   LoaderAtom,
+  AllUserAtom,
 } from "../store/atom/user";
 
 const RequestCard = (props: RequestCardProps) => {
   const refreshReceivedRequests =
     useRecoilRefresher_UNSTABLE(ReceivedRequestAtom);
   const refreshSentRequests = useRecoilRefresher_UNSTABLE(SentRequestAtom);
+  const allUserRefresher = useRecoilRefresher_UNSTABLE(AllUserAtom);
   const refreshOngoingRequests =
     useRecoilRefresher_UNSTABLE(OngoingRequestAtom);
   const setLoading = useSetRecoilState(LoaderAtom);
@@ -29,6 +31,7 @@ const RequestCard = (props: RequestCardProps) => {
     await acceptRequest(props.id);
     setLoading(false);
     refreshReceivedRequests();
+    allUserRefresher();
     refreshSentRequests();
     refreshOngoingRequests();
   };
@@ -51,7 +54,7 @@ const RequestCard = (props: RequestCardProps) => {
       </div>
       <div className="flex items-center gap-x-5">
         <p className={`${statusColor[props.status]}`}>{props.status}</p>
-        {(props.type !== "sent" && props.type !== "ongoing") && (
+        {props.type !== "sent" && props.type !== "ongoing" && (
           <>
             <Button
               type="button"

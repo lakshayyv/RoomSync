@@ -4,11 +4,11 @@ import { errorToast, successToast } from "../utils/toast";
 export const fetchAllUser = async () => {
   try {
     const response = await axios.get("/api/v1/dashboard/user/users");
-    console.log(response.data.message)
+    console.log(response.data.message);
     return response.data.message;
   } catch (error) {
     if (isAxiosError(error)) {
-      return null;
+      return error.response?.data.message;
     }
   }
 };

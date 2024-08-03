@@ -18,8 +18,8 @@ const Dashboard = () => {
             .map((_, i) => {
               return <UserCardSkeleton key={i} />;
             })
-        ) : allUser.contents === null ? (
-          <div>No user for now...</div>
+        ) : typeof allUser.contents === "string" ? (
+          <div>{allUser.contents}</div>
         ) : (
           allUser.contents.map((user: any) => {
             return (
