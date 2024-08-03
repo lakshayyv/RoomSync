@@ -1,8 +1,10 @@
 import { prisma } from "../config/db";
 
-export const ineligibleUser = async (): Promise<string[]> => {
+export const ineligibleUser = async (userId: string): Promise<string[]> => {
   const response = await prisma.request.findMany({
-    where: { status: { in: ["ONGOING", "APPROVED"] } },
+    where: {
+      OR: [{ status: { in: ["ONGOING", "APPROVED"] } }, { senderId: userId }],
+    },
   });
 
   if (response.length < 1) {

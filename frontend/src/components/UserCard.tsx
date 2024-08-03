@@ -1,10 +1,18 @@
+import { useRecoilRefresher_UNSTABLE, useSetRecoilState } from "recoil";
 import { sendRequest } from "../api/dashboard";
 import { UserCardProps } from "../utils/types";
 import Button from "./Button";
+import { AllUserAtom, LoaderAtom } from "../store/atom/user";
 
 const UserCard = (props: UserCardProps) => {
+  const allUserRefresher = useRecoilRefresher_UNSTABLE(AllUserAtom);
+  const setLoading = useSetRecoilState(LoaderAtom);
+
   const handleClick = async () => {
+    setLoading(true);
     await sendRequest(props.id);
+    setLoading(false);
+    allUserRefresher();
   };
 
   return (

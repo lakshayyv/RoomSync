@@ -11,8 +11,10 @@ const controller = {
   fetchUser: CatchAsyncError(
     async (req: Request, res: Response, next: NextFunction) => {
       const user: User = req.user as User;
-      let invalidUser = await ineligibleUser();
+      let invalidUser = await ineligibleUser(user.id);
       invalidUser = [...invalidUser, user?.id];
+
+      console.log(invalidUser)
 
       const response = await prisma.user.findMany({
         select: {
@@ -23,7 +25,7 @@ const controller = {
           year: true,
           course: true,
         },
-        where: { id: { notIn: invalidUser } },
+        where: { id: { notIn: invalidUser }, year: user.year },
       });
 
       if (response.length < 1) {

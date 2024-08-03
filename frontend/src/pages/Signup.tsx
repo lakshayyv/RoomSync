@@ -126,7 +126,7 @@ const Signup = () => {
             </button>
           </div>
           <Button type="submit" label="Submit" className="w-full" />
-          <p className="w-full text-center">
+          <p className="w-full text-center mt-3">
             Already have an account?
             <Link className="font-bold ml-1 text-accent" to="/signin">
               Signin
