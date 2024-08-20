@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useRecoilValueLoadable } from "recoil";
-import { AuthAtom } from "../store/atom/user";
+import { AuthAtom } from "../store/atom/auth";
 import { ProtectedRouteProps } from "../utils/types";
 import Loader from "../components/Loader";
 
@@ -14,10 +14,11 @@ const ProtectedRoute = (props: ProtectedRouteProps) => {
       ) : isLoggedIn.contents ? (
         props.element
       ) : (
-        <Navigate to="/signin" />
+        <Navigate to={props.to || "/signin"} />
       )}
     </>
   );
 };
 
 export default ProtectedRoute;
+ 

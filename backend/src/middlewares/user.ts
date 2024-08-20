@@ -16,8 +16,7 @@ export const verifyUser = CatchAsyncError(
     const tokenPayload = fetchPayload(token);
 
     if (!tokenPayload) {
-      const message: string = "User not authorized";
-      return next(new ErrorHandler(message, 401));
+      return next();
     }
 
     const response = await prisma.user.findUnique({
@@ -25,8 +24,7 @@ export const verifyUser = CatchAsyncError(
     });
 
     if (!response) {
-      const message: string = "User not authorized";
-      return next(new ErrorHandler(message, 401));
+      return next();
     }
 
     req.user = response;

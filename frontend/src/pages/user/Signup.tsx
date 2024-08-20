@@ -1,12 +1,12 @@
 import { ChangeEvent, FormEvent, useState } from "react";
-import Input from "../components/Input";
-import Button from "../components/Button";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { signup } from "../api/user";
+import { signup } from "../../api/user";
 import { useSetRecoilState } from "recoil";
-import { LoaderAtom } from "../store/atom/user";
-import Dropdown from "../components/Dropdown";
+import { LoaderAtom } from "../../store/atom/user";
+import Dropdown from "../../components/Dropdown";
 
 const Signup = () => {
   const [name, setName] = useState("");

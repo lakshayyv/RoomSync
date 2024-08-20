@@ -1,11 +1,12 @@
 import { ChangeEvent, FormEvent, useState } from "react";
-import Input from "../components/Input";
-import Button from "../components/Button";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { signin } from "../api/user";
+import { signin } from "../../api/user";
 import { useSetRecoilState } from "recoil";
-import { LoaderAtom } from "../store/atom/user";
+import { LoaderAtom } from "../../store/atom/user";
+import background from "../../assets/background.png";
 
 const Signin = () => {
   const [email, setEmail] = useState("");
@@ -45,7 +46,7 @@ const Signin = () => {
           <label className="block font-semibold mb-2">Email</label>
           <Input
             type="email"
-            placeholder="lakshay@example.com"
+            placeholder="Enter email"
             value={email}
             cb={(e) => handleInputChange(e, setEmail)}
           />
@@ -54,7 +55,7 @@ const Signin = () => {
           <div className="relative">
             <Input
               type={visible ? "text" : "password"}
-              placeholder="Kuchbhi"
+              placeholder="Enter password"
               value={password}
               cb={(e) => handleInputChange(e, setPassword)}
             />
@@ -79,7 +80,9 @@ const Signin = () => {
           </p>
         </form>
       </div>
-      <div className="w-1/2 bg-black"></div>
+      <div className="w-1/2 bg-black">
+        <img src={background} alt="RoomSync" className="object-cover w-full h-full" />
+      </div>
     </div>
   );
 };

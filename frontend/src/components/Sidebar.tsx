@@ -6,9 +6,9 @@ import { IoSettingsOutline } from "react-icons/io5";
 const Sidebar = () => {
   const location = useLocation();
 
-  const hiddenPaths = ["/signup", "/signin"];
+  const hiddenPaths = ["signup", "signin", "admin"];
 
-  if (hiddenPaths.includes(location.pathname)) {
+  if (hiddenPaths.includes(location.pathname.split("/")[1])) {
     return null;
   }
 

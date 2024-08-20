@@ -1,5 +1,6 @@
 import { Router } from "express";
 import controller from "../controllers/user/user";
+import authController from "../controllers/auth";
 import { verifyUser } from "../middlewares/user";
 
 const router = Router();
@@ -14,7 +15,5 @@ router
   .get(controller.fetchProfile)
   .put(controller.updateProfile)
   .delete(controller.deleteProfile);
-
-router.route("/auth").all(verifyUser).get(controller.fetchAuth);
 
 export default router;

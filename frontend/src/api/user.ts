@@ -40,15 +40,6 @@ export const signin = async (email: string, password: string) => {
   }
 };
 
-export const checkAuth = async () => {
-  try {
-    const response = await axios.get("/api/v1/user/auth");
-    return response.data.authorized;
-  } catch (error) {
-    return false;
-  }
-};
-
 export const fetchProfile = async () => {
   try {
     const response = await axios.get("/api/v1/user/me");

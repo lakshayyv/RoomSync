@@ -145,23 +145,6 @@ const controller = {
       });
     }
   ),
-
-  fetchAuth: CatchAsyncError(
-    async (req: Request, res: Response, next: NextFunction) => {
-      const user = req.user;
-
-      if (!user) {
-        return res.status(200).json({
-          success: true,
-          authorized: false,
-        });
-      }
-      return res.status(200).json({
-        success: true,
-        authorized: true,
-      });
-    }
-  ),
 };
 
 export default controller;

@@ -1,9 +1,9 @@
 import { useRecoilValueLoadable } from "recoil";
-import { UserAtom } from "../store/atom/user";
-import ProfileSkeleton from "../components/skeleton/ProfileSkeleton";
-import ProfileItem from "../components/ProfileItem";
-import Button from "../components/Button";
-import { deleteUser, logoutUser } from "../api/user";
+import { UserAtom } from "../../store/atom/user";
+import ProfileSkeleton from "../../components/skeleton/ProfileSkeleton";
+import ProfileItem from "../../components/ProfileItem";
+import Button from "../../components/Button";
+import { deleteUser, logoutUser } from "../../api/user";
 
 const Profile = () => {
   const user = useRecoilValueLoadable(UserAtom);

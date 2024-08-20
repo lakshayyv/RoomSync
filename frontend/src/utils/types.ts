@@ -30,6 +30,7 @@ export type DropdownProps = {
   value: string;
   onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   className?: string;
+  
 };
 
 export type UserCardProps = {
@@ -72,4 +73,5 @@ export type TabbedPaneProps = {
 
 export type ProtectedRouteProps = {
   element: ReactElement<any, any>;
+  to?: string;
 };

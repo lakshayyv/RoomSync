@@ -16,8 +16,7 @@ export const verifyAdmin = CatchAsyncError(
     const tokenPayload = fetchPayload(token);
 
     if (!tokenPayload) {
-      const message: string = "Admin not authorized";
-      return next(new ErrorHandler(message, 401));
+      return next();
     }
 
     const response = await prisma.admin.findUnique({
@@ -25,8 +24,7 @@ export const verifyAdmin = CatchAsyncError(
     });
 
     if (!response) {
-      const message: string = "Admin not authorized";
-      return next(new ErrorHandler(message, 401));
+      return next();
     }
 
     req.admin = response;
