@@ -14,7 +14,6 @@ import authRouter from "./routes/auth";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(cookieParser());
@@ -29,6 +28,4 @@ app.use("/api/v1/auth", authRouter);
 
 app.use(ErrorMiddleware);
 
-app.listen(port, () => {
-  console.log(`Server started at port [${port}]`);
-});
+export default app;
