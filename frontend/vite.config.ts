@@ -10,6 +10,7 @@ export default defineConfig({
         target: "https://roomsync-backend.vercel.app",
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path,
       },
     },
   },
